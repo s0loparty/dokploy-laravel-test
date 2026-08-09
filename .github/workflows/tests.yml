@@ -31,7 +31,19 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Prepare SQLite database
+        run: touch database/database.sqlite
+
       - name: Setup Application
+        env:
+          APP_ENV: local
+          APP_DEBUG: true
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+          CACHE_STORE: database
+          QUEUE_CONNECTION: database
+          SESSION_DRIVER: database
+          MAIL_MAILER: log
         run: composer setup
 
       - name: Run CI Checks
