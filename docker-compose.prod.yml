@@ -1,0 +1,133 @@
+name: laravel-dokploy
+
+services:
+  app:
+    image: ${APP_IMAGE:?Set APP_IMAGE in Dokploy, for example ghcr.io/owner/repo:latest}
+    pull_policy: always
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      APP_ROLE: app
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:?Set APP_URL in Dokploy}
+      APP_KEY: ${APP_KEY:?Set APP_KEY in Dokploy}
+      LOG_CHANNEL: ${LOG_CHANNEL:-stack}
+      LOG_STACK: ${LOG_STACK:-stderr}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
+      DB_HOST: ${DB_HOST:-pgsql}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE:?Set DB_DATABASE in Dokploy}
+      DB_USERNAME: ${DB_USERNAME:?Set DB_USERNAME in Dokploy}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Dokploy}
+      SESSION_DRIVER: ${SESSION_DRIVER:-database}
+      CACHE_STORE: ${CACHE_STORE:-database}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    expose:
+      - "80"
+    volumes:
+      - app-storage:/var/www/html/storage
+
+  queue:
+    image: ${APP_IMAGE:?Set APP_IMAGE in Dokploy}
+    pull_policy: always
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    environment:
+      APP_ROLE: queue
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:?Set APP_URL in Dokploy}
+      APP_KEY: ${APP_KEY:?Set APP_KEY in Dokploy}
+      LOG_CHANNEL: ${LOG_CHANNEL:-stack}
+      LOG_STACK: ${LOG_STACK:-stderr}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
+      DB_HOST: ${DB_HOST:-pgsql}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE:?Set DB_DATABASE in Dokploy}
+      DB_USERNAME: ${DB_USERNAME:?Set DB_USERNAME in Dokploy}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Dokploy}
+      SESSION_DRIVER: ${SESSION_DRIVER:-database}
+      CACHE_STORE: ${CACHE_STORE:-database}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    command:
+      - php
+      - artisan
+      - queue:work
+      - --verbose
+      - --tries=3
+      - --timeout=90
+      - --sleep=3
+      - --max-time=3600
+    stop_grace_period: 1m
+    volumes:
+      - app-storage:/var/www/html/storage
+
+  scheduler:
+    image: ${APP_IMAGE:?Set APP_IMAGE in Dokploy}
+    pull_policy: always
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    environment:
+      APP_ROLE: scheduler
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:?Set APP_URL in Dokploy}
+      APP_KEY: ${APP_KEY:?Set APP_KEY in Dokploy}
+      LOG_CHANNEL: ${LOG_CHANNEL:-stack}
+      LOG_STACK: ${LOG_STACK:-stderr}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
+      DB_HOST: ${DB_HOST:-pgsql}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE:?Set DB_DATABASE in Dokploy}
+      DB_USERNAME: ${DB_USERNAME:?Set DB_USERNAME in Dokploy}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Dokploy}
+      SESSION_DRIVER: ${SESSION_DRIVER:-database}
+      CACHE_STORE: ${CACHE_STORE:-database}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    command:
+      - php
+      - artisan
+      - schedule:work
+    stop_grace_period: 1m
+    volumes:
+      - app-storage:/var/www/html/storage
+
+  pgsql:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:?Set DB_DATABASE in Dokploy}
+      POSTGRES_USER: ${DB_USERNAME:?Set DB_USERNAME in Dokploy}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Dokploy}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - pgsql-data:/var/lib/postgresql/data
+
+volumes:
+  app-storage:
+  pgsql-data:
