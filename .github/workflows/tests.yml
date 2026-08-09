@@ -35,9 +35,14 @@ jobs:
           node-version: '22'
 
       - name: Prepare SQLite database
-        run: touch database/database.sqlite
+        run: |
+          cp .env.example .env
+          touch database/database.sqlite
 
-      - name: Setup Application
+      - name: Install PHP dependencies
+        run: composer install
+
+      - name: Generate application key
         env:
           APP_ENV: local
           APP_DEBUG: true
@@ -47,7 +52,34 @@ jobs:
           QUEUE_CONNECTION: database
           SESSION_DRIVER: database
           MAIL_MAILER: log
-        run: composer setup
+        run: php artisan key:generate
+
+      - name: Run database migrations
+        env:
+          APP_ENV: local
+          APP_DEBUG: true
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+          CACHE_STORE: database
+          QUEUE_CONNECTION: database
+          SESSION_DRIVER: database
+          MAIL_MAILER: log
+        run: php artisan migrate --force
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Build frontend assets
+        env:
+          APP_ENV: local
+          APP_DEBUG: true
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+          CACHE_STORE: database
+          QUEUE_CONNECTION: database
+          SESSION_DRIVER: database
+          MAIL_MAILER: log
+        run: npm run build
 
       - name: Run CI Checks
         run: composer ci:check
