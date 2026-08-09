@@ -1,5 +1,6 @@
-FROM php:8.3-cli-bookworm AS vendor
+FROM php:8.3-apache-bookworm AS php-base
 
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /app
@@ -16,13 +17,17 @@ RUN apt-get update \
     && docker-php-ext-install -j"$(nproc)" \
         bcmath \
         intl \
+        opcache \
         pcntl \
         pdo_mysql \
         pdo_pgsql \
         zip \
+    && a2enmod headers rewrite expires remoteip \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+FROM php-base AS vendor
 
 COPY composer.json composer.lock ./
 COPY artisan ./
@@ -68,32 +73,9 @@ COPY eslint.config.js ./
 RUN npm ci
 RUN npm run build
 
-FROM php:8.3-apache-bookworm AS app
-
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-ENV COMPOSER_ALLOW_SUPERUSER=1
+FROM php-base AS app
 
 WORKDIR /var/www/html
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        git \
-        unzip \
-        libicu-dev \
-        libpq-dev \
-        libzip-dev \
-        zip \
-    && docker-php-ext-configure intl \
-    && docker-php-ext-install -j"$(nproc)" \
-        bcmath \
-        intl \
-        opcache \
-        pcntl \
-        pdo_mysql \
-        pdo_pgsql \
-        zip \
-    && a2enmod headers rewrite expires remoteip \
-    && rm -rf /var/lib/apt/lists/*
 
 COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY docker/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/99-opcache.ini
