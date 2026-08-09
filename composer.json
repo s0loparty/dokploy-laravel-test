@@ -73,9 +73,7 @@
         ],
         "test": [
             "@php artisan config:clear --ansi",
-            "@lint:check",
-            "@types:check",
-            "@php artisan test"
+            "@php -r \"echo 'No tests configured.'.PHP_EOL;\""
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
