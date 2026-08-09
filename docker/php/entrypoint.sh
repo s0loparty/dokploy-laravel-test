@@ -60,9 +60,9 @@ wait_for_database() {
 }
 
 warm_application() {
-    php artisan optimize:clear --ansi
     php artisan migrate --force --ansi
     php artisan storage:link --ansi || true
+    php artisan optimize:clear --ansi
     php artisan optimize --ansi
 }
 
@@ -74,4 +74,3 @@ if [ "$APP_ROLE" = "app" ]; then
 fi
 
 exec "$@"
-
