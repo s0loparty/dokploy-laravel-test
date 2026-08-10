@@ -111,7 +111,11 @@ defineProps<{
         <div class="text-center text-sm text-muted-foreground">
             Don't have an account?
             <TextLink
-                :href="register.url({ query: { invitation: teamInvitation?.code } })"
+                :href="
+                    register.url({
+                        query: { invitation: teamInvitation?.code },
+                    })
+                "
                 :tabindex="5"
                 data-test="register-link"
             >

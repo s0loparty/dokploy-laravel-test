@@ -28,7 +28,9 @@ defineProps<Props>();
                     </template>
                     <template v-else>
                         <BreadcrumbLink as-child>
-                            <Link :href="toUrl(item.href)">{{ item.title }}</Link>
+                            <Link :href="toUrl(item.href)">{{
+                                item.title
+                            }}</Link>
                         </BreadcrumbLink>
                     </template>
                 </BreadcrumbItem>
