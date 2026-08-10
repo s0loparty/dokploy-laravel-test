@@ -71,7 +71,8 @@ COPY components.json ./
 COPY eslint.config.js ./
 
 RUN npm ci
-RUN npm run build
+RUN php artisan route:clear \
+    && APP_ENV=local npm run build
 
 FROM php-base AS app
 
