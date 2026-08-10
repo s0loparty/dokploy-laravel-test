@@ -14,19 +14,19 @@ import type { NavItem } from '@/types';
 const sidebarNavItems: NavItem[] = [
     {
         title: 'Profile',
-        href: editProfile(),
+        href: editProfile().url,
     },
     {
         title: 'Security',
-        href: editSecurity(),
+        href: editSecurity().url,
     },
     {
         title: 'Teams',
-        href: teams(),
+        href: teams().url,
     },
     {
         title: 'Appearance',
-        href: editAppearance(),
+        href: editAppearance().url,
     },
 ];
 

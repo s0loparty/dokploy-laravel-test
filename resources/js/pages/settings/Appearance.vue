@@ -9,7 +9,7 @@ defineOptions({
         breadcrumbs: [
             {
                 title: 'Appearance settings',
-                href: edit(),
+                href: edit().url,
             },
         ],
     },

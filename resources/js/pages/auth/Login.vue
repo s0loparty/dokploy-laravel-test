@@ -71,7 +71,7 @@ defineProps<{
                     <Label for="password">Password</Label>
                     <TextLink
                         v-if="canResetPassword"
-                        :href="request()"
+                        :href="request().url"
                         class="text-sm"
                         :tabindex="5"
                     >
@@ -111,13 +111,7 @@ defineProps<{
         <div class="text-center text-sm text-muted-foreground">
             Don't have an account?
             <TextLink
-                :href="
-                    register({
-                        query: {
-                            invitation: teamInvitation?.code,
-                        },
-                    })
-                "
+                :href="register.url({ query: { invitation: teamInvitation?.code } })"
                 :tabindex="5"
                 data-test="register-link"
             >

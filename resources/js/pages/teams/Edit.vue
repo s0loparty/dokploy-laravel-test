@@ -51,11 +51,11 @@ defineOptions({
         breadcrumbs: [
             {
                 title: 'Teams',
-                href: index(),
+                href: index().url,
             },
             {
                 title: props.team.name,
-                href: edit(props.team.slug),
+                href: edit(props.team.slug).url,
             },
         ],
     }),

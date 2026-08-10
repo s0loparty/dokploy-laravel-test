@@ -120,7 +120,7 @@ defineOptions({
                                   invitation: teamInvitation.code,
                               },
                           })
-                        : login()
+                        : login().url
                 "
                 class="underline underline-offset-4"
                 :tabindex="6"

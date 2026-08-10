@@ -37,7 +37,7 @@ defineOptions({
         breadcrumbs: [
             {
                 title: 'Teams',
-                href: index(),
+                href: index().url,
             },
         ],
     },
@@ -111,7 +111,7 @@ defineOptions({
                                     size="sm"
                                     as-child
                                 >
-                                    <Link :href="edit(team.slug)">
+                                    <Link :href="edit(team.slug).url">
                                         <Eye class="h-4 w-4" />
                                     </Link>
                                 </Button>
@@ -129,7 +129,7 @@ defineOptions({
                                     size="sm"
                                     as-child
                                 >
-                                    <Link :href="edit(team.slug)">
+                                    <Link :href="edit(team.slug).url">
                                         <Pencil class="h-4 w-4" />
                                     </Link>
                                 </Button>

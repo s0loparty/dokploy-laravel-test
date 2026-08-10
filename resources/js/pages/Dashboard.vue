@@ -15,7 +15,7 @@ defineOptions({
             {
                 title: 'Dashboard',
                 href: props.currentTeam
-                    ? dashboard(props.currentTeam.slug)
+                    ? dashboard(props.currentTeam.slug).url
                     : '/',
             },
         ],

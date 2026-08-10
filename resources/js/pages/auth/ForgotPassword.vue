@@ -60,7 +60,7 @@ defineProps<{
 
         <div class="space-x-1 text-center text-sm text-muted-foreground">
             <span>Or, return to</span>
-            <TextLink :href="login()">log in</TextLink>
+            <TextLink :href="login().url">log in</TextLink>
         </div>
     </div>
 </template>
